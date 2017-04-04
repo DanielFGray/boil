@@ -23,7 +23,7 @@ npm i -S react react-dom  # this happens for every react project
 
 ``` sh
 cd ~/.config/boiler
-echo 'default_dir	$USER/build' > conf        # where to boil every new project
+echo 'default_dir $USER/build' > conf        # where to boil every new project
 echo 'git init' > all                        # this happens for every project
 
 mkdir js
