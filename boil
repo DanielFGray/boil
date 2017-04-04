@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+declare -r config_dir="${XDG_CONFIG_DIR:-$HOME/.config}/boiler"
+declare -r config_file="${config_dir}/conf"
+declare default_dir
+declare default_template
+
+declare -A colors
+colors[red]=$(tput setaf 1)
+colors[green]=$(tput setaf 2)
+colors[blue]=$(tput setaf 4)
+colors[reset]=$(tput sgr0)
+
+color() {
+  local c
+  c="$1"
+  shift
+  printf '%s' "${colors[$c]}" >&2
+  printf '%s\n' "$@" >&2
+  printf '%s' "${colors[reset]}" >&2
+}
+
+err() {
+  color red "$@"
+}
+
+die() {
+  [[ -n "$1" ]] && err "$@"
+  exit 1
+}
+
+parse_config_file() {
+  local line key val nr config_err
+  nr=0
+  config_err=()
+  while IFS= read -r line; do
+    (( ++nr ))
+    [[ -z "$line" || "$line" = '#'* ]] && continue
+    read -r key <<< "${line%% *}"
+    read -r val <<< "${line#* }"
+    if [[ -z "$val" ]]; then
+      config_err+=( "missing value for \"$key\" in config file on line $nr" )
+      continue
+    fi
+    case "$key" in
+      default_dir) default_dir="$val" ;;
+      default_template) default_template="$val" ;;
+      *) config_err+=( "unknown key \"$key\" in config file on line $nr" )
+    esac
+  done < "$config_file"
+  if (( ${#config_err[@]} > 0 )); then
+    err 'there were errors parsing config file:'
+    for e in "${config_err[@]}"; do
+      err "  $e"
+    done
+  fi
+}
+
+boiler() {
+  local t
+  t="$config_dir/$1"
+
+  if [[ -f "$t" ]]; then
+    if [[ -x "$t" ]]; then
+      "$t" "$PWD"
+    else
+      $SHELL "$t" "$PWD"
+    fi
+  elif [[ -d "$t" ]]; then
+    boiler "$1/all"
+    boiler "$1/${1##*/}"
+  elif [[ ! -e "$t" ]]; then
+     [[ "$t" != *all ]] && err "template ${t/$config_dir\/} does not exist"
+  else
+    die "not sure what to do with $t" "  $(file "$t")"
+  fi
+}
+
+if [[ -s "$config_file" ]]; then
+  parse_config_file
+else
+  die "$config_file does not exist or is empty"
+fi
+
+[[ -n "$default_dir" ]] || die 'no default_dir specified in config'
+cd "$default_dir" || die
+
+mkdir "$1" || die
+cd "$1" || die
+shift
+
+if [[ -f "$config_dir/all" ]]; then
+  boiler all
+fi
+
+if (( $# < 1 )); then
+  if [[ -n "$default_template" ]]; then
+    boiler "$default_template"
+    exit
+  else
+    die "no template specified and no default_template in $config_file"
+  fi
+fi
+
+for t; do
+  boiler "$t"
+done
+
+# boil <name> js
+# boil <name> js/react js/webpack
+# boil <name>
