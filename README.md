@@ -26,23 +26,23 @@ cd ~/.config/boiler
 echo "default_dir $HOME/build" > conf        # where to boil every new project
 echo 'git init' > all                        # this happens for every project
 
-mkdir js
+Mkdir js
 echo 'npm init -y' > js/all                  # this happens for every javascript project
 echo 'npm i -S react react-dom' > js/react   # this happens for every react project
 ```
 
 ---
 
-Multiple templates can also be specified. For example, `boil newreact js/react js/eslint` would then look for the following files in `~/.config/boiler`:
+Multiple templates can also be specified. For example, `boil newreact js/react js/lint/react` would look for the following files in `~/.config/boiler`:
 
     all
     js/all
     js/react
     js/react/all
     js/react/react
-    js/eslint
-    js/eslint/all
-    js/eslint/eslint
+    js/lint/all
+    js/lint/react/all
+    js/lint/react/react
 
 ## More advanced configuration
 
@@ -55,13 +55,13 @@ The files in `~/.config/boiler` are, by default, executed with the user's `$SHEL
 If you want to automatically `cd` into the newly created project, a small helper function is needed in your shell's rc file, since scripts cannot alter your current working directory.
 
 ``` sh
-echo 'boil() { command boil "$@" && cd ~/build/"$1"; }' >> ~/.bashrc
+echo 'boil() { command boil "$@" && while getopts 'n:' x; do case "$x" in; n) cd ~/build/"$OPTARG"; esac; done }' >> ~/.bashrc
 ```
 
 You'll want to change `build` to whatever you put as your `default_dir`.
 
 ## Legal
-Copyright (C) 2016 Daniel F Gray <DanielFGray@gmail.com>
+Copyright (C) 2016 Daniel Gray <DanielFGray@gmail.com>
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

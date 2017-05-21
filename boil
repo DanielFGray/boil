@@ -1,109 +1,65 @@
-#!/usr/bin/env bash
+#!/usr/bin/env perl
 
-declare -r config_dir="${XDG_CONFIG_DIR:-$HOME/.config}/boiler"
-declare -r config_file="${config_dir}/conf"
-declare name
-declare default_dir
-declare default_template
+use warnings;
+use strict;
 
-declare -A colors
-colors[red]=$(tput setaf 1)
-colors[green]=$(tput setaf 2)
-colors[blue]=$(tput setaf 4)
-colors[reset]=$(tput sgr0)
+use Path::Tiny;
+use List::Util("uniq");
+use Config::Simple;
+use Getopt::Declare;
 
-color() {
-  local c
-  c="$1"
-  shift
-  printf '%s' "${colors[$c]}" >&2
-  printf '%s\n' "$@" >&2
-  printf '%s' "${colors[reset]}" >&2
+my $specs = q{
+	-n <name>	name of project to create
+	-N		don't execute 'all' scripts
+	-v		verbose
+	[repeatable]
+	{ $::verbose++; }
+};
+my $args = Getopt::Declare->new($specs);
+
+my $configDir = ($ENV{XDG_CONFIG} // "$ENV{HOME}/.config") . "/boiler";
+
+tie my %Config, "Config::Simple", "$configDir/conf";
+
+sub dirs {
+  my @paths = ("/all");
+  for (@_) {
+    $_ = "/" . $_ if substr($_, 0, 1) ne "/";
+    my $q = Path::Tiny->new($_);
+    do {
+      if (-d "$configDir/$q") {
+        push @paths, "$q/all";
+      } elsif (-f "$configDir/$q") {
+        push @paths, "$q";
+      } else {
+        printf "%s is not a valid task\n", substr($_, 1);
+        exit;
+      }
+      push @paths, $q;
+    }
+    while (($q = $q->parent) ne "/");
+  }
+  return sort { $a cmp $b } uniq(@paths);
 }
 
-err() {
-  color red "$@" >2
+sub boil {
+  for (@_) {
+    $_ = $configDir . $_;
+    if (-f) {
+      # printf "running %s\n", $_;
+      if (-x) {
+        system($_);
+      } else {
+        system($ENV{SHELL}, $_);
+      }
+    }
+  }
 }
 
-die() {
-  [[ -n "$1" ]] && err "$@"
-  exit 1
+if ($args->{'-n'}) {
+  my $dir = sprintf '%s/%s', $Config{default_dir}, $args->{'-n'};
+  system("mkdir -p $dir");
+  chdir $dir || exit 4;
 }
 
-parse_config_file() {
-  local line key val nr config_err
-  nr=0
-  config_err=()
-  while IFS= read -r line; do
-    (( ++nr ))
-    [[ -z "$line" || "$line" = '#'* ]] && continue
-    read -r key <<< "${line%% *}"
-    read -r val <<< "${line#* }"
-    if [[ -z "$val" ]]; then
-      config_err+=( "missing value for \"$key\" in config file on line $nr" )
-      continue
-    fi
-    case "$key" in
-      default_dir) default_dir="$val" ;;
-      default_template) default_template="$val" ;;
-      *) config_err+=( "unknown key \"$key\" in config file on line $nr" )
-    esac
-  done < "$config_file"
-  if (( ${#config_err[@]} > 0 )); then
-    err 'there were errors parsing config file:'
-    for e in "${config_err[@]}"; do
-      err "  $e"
-    done
-  fi
-}
-
-boiler() {
-  local t
-  t="$config_dir/$1"
-
-  if [[ -f "$t" ]]; then
-    if [[ -x "$t" ]]; then
-      "$t" "$PWD"
-    else
-      $SHELL "$t" "$PWD"
-    fi
-  elif [[ -d "$t" ]]; then
-    boiler "$1/all"
-    boiler "$1/${1##*/}"
-  elif [[ ! -e "$t" ]]; then
-     [[ "$t" != *all ]] && err "template ${t/$config_dir\/} does not exist"
-  else
-    die "not sure what to do with $t" "  $(file "$t")"
-  fi
-}
-
-if [[ -s "$config_file" ]]; then
-  parse_config_file
-else
-  die "$config_file does not exist or is empty"
-fi
-
-[[ -n "$default_dir" ]] || die 'no default_dir specified in config'
-cd "$default_dir" || die
-
-name="$1"
-mkdir "$name" || die
-cd "$name" || die
-shift
-
-if [[ -f "$config_dir/all" ]]; then
-  boiler all
-fi
-
-if (( $# < 1 )); then
-  if [[ -n "$default_template" ]]; then
-    boiler "$default_template"
-    exit
-  else
-    die "no template specified and no default_template in $config_file"
-  fi
-fi
-
-for t; do
-  boiler "$t"
-done
+boil dirs @ARGV;
