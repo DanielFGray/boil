@@ -37,7 +37,7 @@ sub dirs {
     }
     while (($q = $q->parent) ne "/");
   }
-  return sort { $a cmp $b } uniq(@paths);
+  return sort { $a cmp $b } uniq @paths;
 }
 
 sub boil {
@@ -46,9 +46,9 @@ sub boil {
     if (-f) {
       # printf "running %s\n", $_;
       if (-x) {
-        system($_);
+        system $_;
       } else {
-        system($ENV{SHELL}, $_);
+        system $ENV{SHELL}, $_;
       }
     }
   }
