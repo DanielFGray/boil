@@ -19,14 +19,14 @@ my $configDir = ($ENV{XDG_CONFIG} // "$ENV{HOME}/.config") . '/boiler';
 tie my %Config, 'Config::Simple', "$configDir/conf";
 
 sub dirs {
-  my @paths = ('/all') unless ($args->{'-N'});
+  my @paths = ('/all') unless ($args->{'-A'});
   for (@_) {
     $_ = '/' . $_ if substr($_, 0, 1) ne '/';
     push @paths, sprintf '%s/%s', $_,  (split '/')[-1];
     my $q = Path::Tiny->new($_);
     do {
       if (-d "$configDir/$q") {
-        push @paths, "$q/all" unless ($args->{'-N'});
+        push @paths, "$q/all" unless ($args->{'-A'});
       } elsif (-f "$configDir/$q") {
         push @paths, $q;
       } else {
