@@ -61,7 +61,7 @@ The tasks in `~/.config/boiler` are, by default, executed with the user's `$SHEL
 If you want to automatically `cd` into the newly created project, a small helper function is needed in your shell's rc file, since scripts cannot alter your current working directory.
 
 ``` sh
-echo 'boil() { command boil "$@" && while getopts 'n:' x; do case "$x" in; n) cd ~/build/"$OPTARG"; esac; done }' >> ~/.bashrc
+boil() { command boil "$@" && while getopts 'n:' x; do case "$x" in; n) cd ~/build/"$OPTARG"; esac; done }
 ```
 
 You'll want to change `build` to whatever you put as your `default_dir`.
