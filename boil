@@ -46,9 +46,9 @@ sub boil {
     if (-f) {
       # printf "running %s\n", $_;
       if (-x) {
-        system $_;
+        system $ || exit 1_;
       } else {
-        system $ENV{SHELL}, $_;
+        system $ENV{SHELL}, $_ || exit 1;
       }
     }
   }
@@ -57,7 +57,7 @@ sub boil {
 if ($args->{'-n'}) {
   my $dir = sprintf '%s/%s', $Config{default_dir}, $args->{'-n'};
   system("mkdir -p $dir");
-  chdir $dir || exit 4;
+  chdir $dir || exit 1;
 }
 
 boil dirs @ARGV;
