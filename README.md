@@ -33,7 +33,7 @@ echo 'npm i -S react react-dom' > js/react   # this happens for every react proj
 
 ---
 
-Multiple templates can also be specified. For example, `boil newreact js/react js/lint/react` would look for the following files in `~/.config/boiler`:
+Multiple templates can also be specified. For example, `boil -n newreact js/react js/lint/react` would look for the following files in `~/.config/boiler`:
 
     all
     js/all
@@ -46,9 +46,9 @@ Multiple templates can also be specified. For example, `boil newreact js/react j
 
 ## More advanced configuration
 
-Files in `~/.config/boiler` don't have to be just single commands, they can be multiple commands, or entire scripts. All scripts are passed the project's directory as an argument.
+Tasks in `~/.config/boiler` don't have to be just single commands, they can be multiple commands, or entire scripts.
 
-The files in `~/.config/boiler` are, by default, executed with the user's `$SHELL`. If they are marked as executable (ie with `chmod +x`) they will be called as a regular executable, which means tasks can be written in any language.
+The tasks in `~/.config/boiler` are, by default, executed with the user's `$SHELL`. If they are marked as executable (ie with `chmod +x`) they will be called as a regular executable, which means tasks can be written in any language.
 
 ## Small helper
 
