@@ -19,14 +19,14 @@ npm init -y               # this happens for every javascript project
 npm i -S react react-dom  # this happens for every react project
 ```
 
-`boil newreact js/react` can do this for you with the following configuration:
+`boil -n newreact js/react` can do this for you with the following configuration:
 
 ``` sh
 cd ~/.config/boiler
 echo "default_dir $HOME/build" > conf        # where to boil every new project
 echo 'git init' > all                        # this happens for every project
 
-Mkdir js
+mkdir js
 echo 'npm init -y' > js/all                  # this happens for every javascript project
 echo 'npm i -S react react-dom' > js/react   # this happens for every react project
 ```
@@ -48,7 +48,7 @@ Multiple templates can also be specified. For example, `boil newreact js/react j
 
 Files in `~/.config/boiler` don't have to be just single commands, they can be multiple commands, or entire scripts. All scripts are passed the project's directory as an argument.
 
-The files in `~/.config/boiler` are, by default, executed with the user's `$SHELL`. If they are marked as executable (ie with `chmod +x`) they will be called as a regular executable, which means they can be written in any language.
+The files in `~/.config/boiler` are, by default, executed with the user's `$SHELL`. If they are marked as executable (ie with `chmod +x`) they will be called as a regular executable, which means tasks can be written in any language.
 
 ## Small helper
 

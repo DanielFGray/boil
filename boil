@@ -27,9 +27,9 @@ sub dirs {
       if (-d "$configDir/$q") {
         push @paths, "$q/all";
       } elsif (-f "$configDir/$q") {
-        push @paths, "$q";
+        push @paths, $q;
       } else {
-        printf "%s is not a valid task\n", substr($_, 1);
+        printf "task %s could not be found\n", substr($_, 1);
         exit;
       }
       push @paths, $q;
