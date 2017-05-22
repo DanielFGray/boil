@@ -10,7 +10,7 @@ use Getopt::Declare;
 
 my $specs = q{
 	-n <name>	name of project to create
-	-N		don't execute 'all' scripts
+	-A		don't execute 'all' scripts
 };
 my $args = Getopt::Declare->new($specs);
 

@@ -48,6 +48,8 @@ Multiple templates can also be specified. For example, `boil -n newreact js/reac
 
 Creating a new project is optional, if you omit the `-n` flag then no new dirs will be created and the tasks will be run in the current directory.
 
+The `all` tasks can be skipped by passing the `-A` switch.
+
 ## More advanced configuration
 
 Tasks in `~/.config/boiler` don't have to be just single commands, they can be multiple commands, or entire scripts.
