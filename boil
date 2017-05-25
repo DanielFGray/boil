@@ -14,7 +14,7 @@ my $specs = q{
 };
 my $args = Getopt::Declare->new($specs);
 
-my $configDir = ($ENV{XDG_CONFIG} // "$ENV{HOME}/.config") . '/boiler';
+my $configDir = ($ENV{XDG_CONFIG} // "$ENV{HOME}/.config") . '/boil';
 
 tie my %Config, 'Config::Simple', "$configDir/conf";
 
