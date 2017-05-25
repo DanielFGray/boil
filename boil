@@ -37,15 +37,13 @@ sub dirs {
     }
     while (($q = $q->parent) ne '/');
   }
-  push @paths, '/post';
-  return sort { $a cmp $b } uniq @paths;
+  return sort { $a cmp $b } uniq (@paths, '/post');
 }
 
 sub boil {
   for (@_) {
     $_ = $configDir . $_;
     if (-f) {
-      # printf "running %s\n", $_;
       if (-x) {
         system $_ || exit 1;
       } else {
