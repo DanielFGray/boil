@@ -22,7 +22,7 @@ npm i -S react react-dom  # this happens for every react project
 `boil -n newreact js/react` can do this for you with the following configuration:
 
 ``` sh
-cd ~/.config/boiler
+cd ~/.config/boil
 echo "default_dir $HOME/build" > conf        # where to boil every new project
 echo 'git init' > all                        # this happens for every project
 
@@ -33,7 +33,7 @@ echo 'npm i -S react react-dom' > js/react   # this happens for every react proj
 
 ---
 
-Multiple templates can also be specified. For example, `boil -n newreact js/react js/lint/react` would look for the following files in `~/.config/boiler`:
+Multiple templates can also be specified. For example, `boil -n newreact js/react js/lint/react` would look for the following files in `~/.config/boil`:
 
     all
     js/all
@@ -41,6 +41,7 @@ Multiple templates can also be specified. For example, `boil -n newreact js/reac
     js/react/all
     js/react/react
     js/lint/all
+    js/lint/react
     js/lint/react/all
     js/lint/react/react
 
@@ -52,9 +53,9 @@ The `all` tasks can be skipped by passing the `-A` switch.
 
 ## More advanced configuration
 
-Tasks in `~/.config/boiler` don't have to be just single commands, they can be multiple commands, or entire scripts.
+Tasks in `~/.config/boil` don't have to be just single commands, they can be multiple commands, or entire scripts.
 
-The tasks in `~/.config/boiler` are, by default, executed with the user's `$SHELL`. If they are marked as executable (ie with `chmod +x`) they will be called as a regular executable, which means tasks can be written in any language.
+The tasks in `~/.config/boil` are, by default, executed with the user's `$SHELL`. If they are marked as executable (ie with `chmod +x`) they will be called as a regular executable, which means tasks can be written in any language.
 
 ## Small helper
 
