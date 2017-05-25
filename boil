@@ -21,7 +21,7 @@ tie my %Config, 'Config::Simple', "$configDir/conf";
 sub dirs {
   my @paths = ('/all') unless ($args->{'-A'});
   for (@_) {
-    $_ = '/' . $_ if substr($_, 0, 1) ne '/';
+    $_ = '/' . $_ if substr $_, 0, 1 ne '/';
     push @paths, sprintf '%s/%s', $_,  (split '/')[-1];
     my $q = Path::Tiny->new($_);
     do {
@@ -30,12 +30,12 @@ sub dirs {
       } elsif (-f "$configDir/$q") {
         push @paths, $q;
       } else {
-        printf "task %s could not be found\n", substr($_, 1);
+        printf "task %s could not be found\n", substr $_, 1;
         exit;
       }
       push @paths, $q;
     }
-    while (($q = $q->parent) ne "/");
+    while (($q = $q->parent) ne '/');
   }
   return sort { $a cmp $b } uniq @paths;
 }
@@ -46,7 +46,7 @@ sub boil {
     if (-f) {
       # printf "running %s\n", $_;
       if (-x) {
-        system $ || exit 1_;
+        system $_ || exit 1;
       } else {
         system $ENV{SHELL}, $_ || exit 1;
       }
@@ -56,7 +56,7 @@ sub boil {
 
 if ($args->{'-n'}) {
   my $dir = sprintf '%s/%s', $Config{default_dir}, $args->{'-n'};
-  system("mkdir -p $dir");
+  system "mkdir -p $dir" || exit 1;
   chdir $dir || exit 1;
 }
 
