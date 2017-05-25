@@ -1,4 +1,4 @@
-# Boiler
+# Boil
 
 Generic custom boilerplates
 
