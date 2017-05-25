@@ -37,6 +37,7 @@ sub dirs {
     }
     while (($q = $q->parent) ne '/');
   }
+  push @paths, '/post';
   return sort { $a cmp $b } uniq @paths;
 }
 
